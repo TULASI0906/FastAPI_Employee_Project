@@ -68,11 +68,11 @@ employees = [
 next_id = 6
 
 
-@app.post("/employees")
+@app.post("/employees", status_code=201)
 def create_employee(data: EmployeeCreate):
     global next_id
     for employee in employees:
-        if employee["email"] == data.email:
+        if employee["email"].lower() == data.email.lower():
             raise HTTPException(status_code=400, detail="Employee with this email already exists")
         
     new_employee = {
@@ -104,20 +104,29 @@ def get_employee(id: int = Path(gt=0)):
 
 @app.put("/employees/{id}")
 def put_employee(data: EmployeeUpdate, id: int = Path(gt=0)):
+    employee = None
+
+    for emp in employees:
+        if emp["id"] == id:
+            employee = emp
+            break
+
+    if employee is None:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
     for other in employees:
-        if other["id"] != id and other["email"] == data.email:
+        if other["id"] != id and other["email"].lower() == data.email.lower():
             raise HTTPException(status_code=400, detail="Email already exists")
 
-    for employee in employees:
-        if employee["id"] == id:
-            employee["name"] = data.name
-            employee["email"] = data.email
-            employee["department"] = data.department
-            employee["primary_skill"] = data.primary_skill
-            employee["location"] = data.location
-            employee["work_mode"] = data.work_mode.value
-            employee["is_active"] = data.is_active
-            return employee
+    employee["name"] = data.name
+    employee["email"] = data.email
+    employee["department"] = data.department
+    employee["primary_skill"] = data.primary_skill
+    employee["location"] = data.location
+    employee["work_mode"] = data.work_mode.value
+    employee["is_active"] = data.is_active
+
+    return employee
 
 
 @app.delete("/employees/{id}")
