@@ -1,95 +1,105 @@
 #Employee Management API
 
-#About This Project-
+#Project Overview
 
-I am a beginner in FastAPI, and I created this project to learn how a simple backend API works.
-This project is used to create, view, update and delete employee details.
-The employee data is stored temporarily in a Python list. No database is used.
+This project is a FastAPI backend application used to manage employee records.
+It provides REST APIs to create, view, update and delete employee information.
+Employee data is temporarily stored in a Python list. No database is used in this project.
 
-#For Beginners-
-
-This README is written in simple English so that new learners can understand and run the project easily.
-
-#Technologies Used-
+#Technologies Used
 
 - Python
 - FastAPI
 - Pydantic
 - Uvicorn
 - Swagger UI
+- Git
 
-#Features-
+#Features
 
-- Create employee
-- Get all employees
-- Get employee by ID
-- Update employee
-- Delete employee
-- Health check
-- Email validation
-- Duplicate email check
-- Employee ID validation
-- 404 error handling
+- Create a new employee
+- View all employees
+- View an employee by ID
+- Update employee details
+- Delete an employee
+- Check application health
+- Validate employee input
+- Validate email format
+- Ensure email addresses are unique
+- Restrict work mode to WFH or WFO
+- Validate employee ID
+- Return appropriate HTTP error responses
 
-#API Endpoints-
+#Setup and Installation
 
-| Method | Endpoint | Use |
-
-| GET | /health | Check application |
-| POST | /employees | Create employee |
-| GET | /employees | Get all employees |
-| GET | /employees/{id} | Get one employee |
-| PUT | /employees/{id} | Update employee |
-| DELETE | /employees/{id} | Delete employee |
-
-##How to Run-
-
-Create virtual environment:
---text
+1. Create a virtual environment
+text:
 py -3.12 -m venv venv
-
-Activate venv:
-
+2. Activate the virtual environment
 venv\Scripts\activate
-
-Install packages:
-
+3. Install the required packages
 pip install -r requirements.txt
-
-Start the server:
-
+4. Run the FastAPI application
 uvicorn main:app --reload
-
-Open Swagger:
-
+5. Open Swagger UI
 http://127.0.0.1:8000/docs
 
-Sample Data-
 
-Five sample employees are added directly in the code for testing.
+API Endpoints----
 
-Tulasi
-Veera
-Pramodh
-Pranay
-Hemanth
+Method  /Endpoint       /Description
 
-What I Learned-
+GET	    /health         /Check application health
+POST    /employees	    /Create a new employee
+GET     /employees	    /Get all employees
+GET	    /employees/{id}	/Get an employee by ID
+PUT	    /employees/{id}	/Update employee details
+DELETE	/employees/{id}	/Delete an employee
 
-As a beginner, I learned how FastAPI, APIs, CRUD operations, Pydantic validation and Swagger UI work.
-I also learned how to handle errors and store data temporarily using a Python list.
+Validation Rules--
 
-Difficulties Faced-
-
-Understanding APIs, validation and error handling was difficult at first.
-Testing each API using Swagger helped me understand them better.
-
-Assumptions-
-No database is used.
-Employee data is stored in a Python list.
-Five sample records are hardcoded for testing.
-Data will be lost when the application is restarted.
-Email must be unique.
-Work mode can only be WFH or WFO.
+Employee name is required.
+Email must be in a valid email format.
+Email addresses must be unique.
+Department is required.
+Primary skill is required.
+Location is required.
+Work mode must be either WFH or WFO.
+Employee ID must be greater than 0.
+A 404 Not Found response is returned when an employee does not exist.
+A 400 Bad Request response is returned when a duplicate email is used.
 
 
+Data Storage--
+
+Employee records are stored temporarily in a Python list in memory.
+No database is used in this project.
+Because the data is stored in memory, employee records added through the API are lost when the application is restarted.
+Five sample employee records are hardcoded in the application for testing.
+
+What I Learned--
+
+Through this project, I learned:
+
+How to create REST APIs using FastAPI.
+How to define and validate request data using Pydantic.
+How to use HTTP methods such as GET, POST, PUT and DELETE.
+How CRUD operations work in a backend application.
+How to use Swagger UI to test APIs.
+How to handle validation and HTTP errors.
+How to use Git and maintain a project repository.
+
+
+Difficulties Faced--
+
+Understanding API concepts, request validation and error handling was difficult at first.
+Testing each API using Swagger UI helped me understand how the backend works and how different requests and responses are handled.
+
+Assumptions--
+
+No database is used in this project.
+Employee data is stored temporarily in a Python list.
+Five sample employee records are hardcoded for testing.
+Data stored in memory will be lost when the application is restarted.
+Email addresses must be unique.
+Work mode can only be WFH or WFO
