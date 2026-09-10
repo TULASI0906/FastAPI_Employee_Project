@@ -1,12 +1,12 @@
-#Employee Management API
+# Employee Management API
 
-#Project Overview
+# Project Overview
 
 This project is a FastAPI backend application used to manage employee records.
 It provides REST APIs to create, view, update and delete employee information.
 Employee data is temporarily stored in a Python list. No database is used in this project.
 
-#Technologies Used
+# Technologies Used
 
 - Python
 - FastAPI
@@ -15,7 +15,7 @@ Employee data is temporarily stored in a Python list. No database is used in thi
 - Swagger UI
 - Git
 
-#Features
+# Features
 
 - Create a new employee
 - View all employees
@@ -30,7 +30,7 @@ Employee data is temporarily stored in a Python list. No database is used in thi
 - Validate employee ID
 - Return appropriate HTTP error responses
 
-#Setup and Installation
+# Setup and Installation
 
 1. Create a virtual environment
 text:
