@@ -104,6 +104,10 @@ def get_employee(id: int = Path(gt=0)):
 
 @app.put("/employees/{id}")
 def put_employee(data: EmployeeUpdate, id: int = Path(gt=0)):
+    for other in employees:
+        if other["id"] != id and other["email"] == data.email:
+            raise HTTPException(status_code=400, detail="Email already exists")
+
     for employee in employees:
         if employee["id"] == id:
             employee["name"] = data.name
@@ -114,7 +118,6 @@ def put_employee(data: EmployeeUpdate, id: int = Path(gt=0)):
             employee["work_mode"] = data.work_mode.value
             employee["is_active"] = data.is_active
             return employee
-    raise HTTPException(status_code=404, detail="Employee not found")
 
 
 @app.delete("/employees/{id}")
