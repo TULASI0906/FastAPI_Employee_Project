@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Path
+from fastapi import Depends, FastAPI, Path, Query
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
 from app import models
-from app.schemas import EmployeeCreate, EmployeeResponse, EmployeeUpdate
+from app.schemas import (
+    EmployeeCreate,
+    EmployeeResponse,
+    EmployeeUpdate,
+    EmployeeListResponse
+)
 from app.services import (
     create_employee,
     delete_employee,
@@ -46,12 +51,47 @@ def create_employee_api(
 
 @app.get(
     "/employees",
-    response_model=list[EmployeeResponse]
+    response_model=EmployeeListResponse
 )
 def get_employees(
+    search: str | None = Query(
+        default=None,
+        description="Search employees by name"
+    ),
+    department: str | None = Query(
+        default=None,
+        description="Filter by department"
+    ),
+    work_mode: str | None = Query(
+        default=None,
+        description="Filter by WFH or WFO"
+    ),
+    is_active: bool | None = Query(
+        default=None,
+        description="Filter by active status"
+    ),
+    limit: int = Query(
+        default=10,
+        ge=1,
+        le=100,
+        description="Maximum records to return"
+    ),
+    offset: int = Query(
+        default=0,
+        ge=0,
+        description="Number of records to skip"
+    ),
     db: Session = Depends(get_db)
 ):
-    return get_all_employees(db)
+    return get_all_employees(
+        db=db,
+        search=search,
+        department=department,
+        work_mode=work_mode,
+        is_active=is_active,
+        limit=limit,
+        offset=offset
+    )
 
 
 @app.get(

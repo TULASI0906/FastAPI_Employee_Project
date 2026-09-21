@@ -9,7 +9,7 @@ class WorkMode(str, Enum):
     WFO = "WFO"
 
 
-class EmployeeCreate(BaseModel):
+class EmployeeBase(BaseModel):
     name: str
     email: EmailStr
     department: str
@@ -17,9 +17,14 @@ class EmployeeCreate(BaseModel):
     location: str
     work_mode: WorkMode
 
-    @field_validator("name", "department", "primary_skill", "location")
+    @field_validator(
+        "name",
+        "department",
+        "primary_skill",
+        "location"
+    )
     @classmethod
-    def validate_required_fields(cls, value):
+    def reject_blank_fields(cls, value: str) -> str:
         value = value.strip()
 
         if not value:
@@ -28,35 +33,24 @@ class EmployeeCreate(BaseModel):
         return value
 
 
-class EmployeeUpdate(BaseModel):
-    name: str
-    email: EmailStr
-    department: str
-    primary_skill: str
-    location: str
-    work_mode: WorkMode
+class EmployeeCreate(EmployeeBase):
+    pass
+
+
+class EmployeeUpdate(EmployeeBase):
     is_active: bool
 
-    @field_validator("name", "department", "primary_skill", "location")
-    @classmethod
-    def validate_required_fields(cls, value):
-        value = value.strip()
 
-        if not value:
-            raise ValueError("Field cannot be empty or whitespace-only")
-
-        return value
-
-
-class EmployeeResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class EmployeeResponse(EmployeeBase):
     id: int
-    name: str
-    email: EmailStr
-    department: str
-    primary_skill: str
-    location: str
-    work_mode: WorkMode
     is_active: bool
     created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class EmployeeListResponse(BaseModel):
+    total: int
+    limit: int
+    offset: int
+    items: list[EmployeeResponse]

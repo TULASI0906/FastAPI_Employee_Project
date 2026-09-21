@@ -57,9 +57,63 @@ def create_employee(db: Session, data: EmployeeCreate):
         )
 
 
-def get_all_employees(db: Session):
+def get_all_employees(
+    db: Session,
+    search: str | None = None,
+    department: str | None = None,
+    work_mode: str | None = None,
+    is_active: bool | None = None,
+    limit: int = 10,
+    offset: int = 0
+):
     try:
-        return db.query(Employee).all()
+        query = db.query(Employee)
+
+        # Search by employee name
+        if search:
+            search = search.strip()
+
+            if search:
+                query = query.filter(
+                    func.lower(Employee.name).contains(search.lower())
+                )
+
+        # Department filter
+        if department:
+            query = query.filter(
+                Employee.department == department
+            )
+
+        # Work mode filter
+        if work_mode:
+            query = query.filter(
+                Employee.work_mode == work_mode
+            )
+
+        # Active/inactive filter
+        if is_active is not None:
+            query = query.filter(
+                Employee.is_active == is_active
+            )
+
+        # Count matching records BEFORE pagination
+        total = query.count()
+
+        # Sort by employee ID ascending
+        employees = (
+            query
+            .order_by(Employee.id.asc())
+            .offset(offset)
+            .limit(limit)
+            .all()
+        )
+
+        return {
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "items": employees
+        }
 
     except SQLAlchemyError:
         db.rollback()
@@ -179,7 +233,9 @@ def delete_employee(db: Session, employee_id: int):
         db.delete(employee)
         db.commit()
 
-        return {"message": "Employee deleted successfully"}
+        return {
+            "message": "Employee deleted successfully"
+        }
 
     except HTTPException:
         raise
