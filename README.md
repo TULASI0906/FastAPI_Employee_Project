@@ -112,6 +112,62 @@ GET	    /employees/{id}	   /Get an employee by ID
 PUT	    /employees/{id}	   /Update employee details
 DELETE	/employees/{id}	   /Delete an employee
 
+Task 3 - Search, Filtering and Pagination-
+
+The GET /employees endpoint was extended to support employee search, filtering and pagination.
+
+Query Parameters-
+
+search - Searches employees by name. Partial matches are supported and the search is case-insensitive.
+department - Filters employees by department.
+work_mode - Filters employees by work mode. Allowed values are WFH and WFO.
+is_active - Filters employees based on active status. Allowed values are true and false.
+limit - Specifies the maximum number of records to return. Default value is 10. Allowed values are from 1 to 100.
+offset - Specifies the number of matching records to skip. Default value is 0. Negative values are not allowed.
+
+The filters can be used individually or together.
+
+Example Requests-
+Search by employee name:
+GET /employees?search=tula
+
+Filter by department:
+GET /employees?department=Engineering
+
+Filter by work mode:
+GET /employees?work_mode=WFH
+
+Filter by active status:
+GET /employees?is_active=true
+
+Use pagination:
+GET /employees?limit=5&offset=0
+GET /employees?limit=5&offset=5
+
+Use multiple filters together:
+GET /employees?department=Engineering&work_mode=WFH&limit=5&offset=0
+
+Response Format-
+The GET /employees endpoint returns the total number of matching employees before pagination, the requested limit, the requested offset and the employee records.
+
+Example:
+
+{
+    "total": 10,
+    "limit": 5,
+    "offset": 0,
+    "items": []
+}
+
+The employees are returned in ascending order of employee ID.
+
+If no employees match the search or filters, the API returns a 200 OK response with total set to 0 and an empty items list.
+
+If the offset is greater than the number of matching records, the API returns an empty items list while keeping the correct total.
+
+Validation-
+Invalid values such as limit=0, limit greater than 100, negative offset or an unsupported work mode are rejected with a validation response.
+Search, filtering, counting and pagination are performed using SQLAlchemy database queries.
 
 Employee Fields-
 id - Automatically generated employee ID
@@ -198,3 +254,44 @@ Employee data used for testing is fictional.
 MySQL is running locally on the development machine.
 Database connection details are stored in the local .env file.
 Authentication, frontend, Docker, relationships and database migrations are not implemented because they are not required for this task.
+
+Task 3 Testing-
+
+The updated GET /employees endpoint was tested using Swagger UI.
+
+The following scenarios were tested:
+Partial employee-name search
+Department filter
+Work mode filter
+Active status filter
+Combined filters
+
+Pagination using limit and offset
+Pagination using offset=0
+Pagination using offset=5
+Offset exceeding the matching records
+No matching employees
+Invalid limit value
+Negative offset
+Invalid work mode
+
+The Swagger test screenshots are included in the Task 3 screenshots folder.
+
+Task 3 - What I Learned-
+
+Through Task 3, I learned:
+How to use FastAPI query parameters.
+How to implement partial employee-name searches.
+How to apply multiple filters together.
+How to implement pagination using limit and offset.
+How to count matching records before pagination.
+How to perform filtering and pagination using SQLAlchemy queries.
+How to validate query parameter values using FastAPI.
+How to test search, filters and pagination using Swagger UI.
+
+Task 3 - Difficulties Faced-
+
+Initially, I had difficulty understanding how query parameters, filters and pagination work together.
+Understanding the difference between limit and offset was also difficult at first.
+Testing different combinations of filters through Swagger UI helped me understand how the GET /employees endpoint processes the request.
+
