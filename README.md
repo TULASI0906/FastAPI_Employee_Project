@@ -40,6 +40,7 @@ FastAPI_Employee_Project/
 ├── .gitignore
 ├── requirements.txt
 └── README.md
+```
 
 Features-
 Create a new employee
