@@ -9,8 +9,10 @@ from app.schemas import (
     EmployeeCreate,
     EmployeeResponse,
     EmployeeUpdate,
-    EmployeeListResponse
+    EmployeeListResponse,
+   WorkMode
 )
+
 from app.services import (
     create_employee,
     delete_employee,
@@ -62,7 +64,7 @@ def get_employees(
         default=None,
         description="Filter by department"
     ),
-    work_mode: str | None = Query(
+    work_mode: WorkMode | None = Query(
         default=None,
         description="Filter by WFH or WFO"
     ),
