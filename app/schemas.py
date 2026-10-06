@@ -77,7 +77,7 @@ class AssignedEmployeeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class WorkItemCreate(BaseModel):
-    title: str = Field(min_length=1)
+    title: str = Field(min_length=1, max_length=100)
     description: str | None = None
     employee_id: int = Field(gt=0)
     status: WorkItemStatus = WorkItemStatus.TODO
@@ -92,7 +92,7 @@ class WorkItemCreate(BaseModel):
         return value
 
 class WorkItemUpdate(BaseModel):
-    title: str | None = Field(min_length=1)
+    title: str = Field(min_length=1, max_length=100)
     description: str | None = None
     employee_id: int | None = Field(gt=0)
     status: WorkItemStatus

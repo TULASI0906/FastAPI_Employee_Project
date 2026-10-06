@@ -226,6 +226,18 @@ def delete_employee(db: Session, employee_id: int):
                 detail="Employee not found"
             )
 
+        assigned_work = (
+            db.query(WorkItem)
+            .filter(WorkItem.employee_id == employee_id)
+            .first()
+        )
+
+        if assigned_work is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot delete employee. Reassign or delete their work items first."
+            )
+
         db.delete(employee)
         db.commit()
 
@@ -330,6 +342,7 @@ def get_work_items(
         "items": items
     }
 
+
 def get_work_item(db, work_item_id):
     work_item = (
         db.query(WorkItem)
@@ -362,7 +375,7 @@ def update_work_item(db, work_item_id, data):
     if data.title is not None:
         work_item.title = data.title.strip()
 
-    if data.description is not None:
+    if "description" in data.model_fields_set:
         work_item.description = data.description
 
     if data.employee_id is not None:
@@ -386,7 +399,7 @@ def update_work_item(db, work_item_id, data):
     if data.priority is not None:
         work_item.priority = data.priority.value
 
-    if data.due_date is not None:
+    if "due_date" in data.model_fields_set:
         work_item.due_date = data.due_date
 
     try:
@@ -416,7 +429,15 @@ def delete_work_item(db, work_item_id):
             detail="Work item not found"
         )
 
-    db.delete(work_item)
-    db.commit()
+    try:
+        db.delete(work_item)
+        db.commit()
 
-    return None
+        return None
+
+    except SQLAlchemyError:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Database error while deleting work item"
+        )
