@@ -380,3 +380,167 @@ I also found it difficult to understand foreign keys and relationships.
 Handling null values during updates was another difficulty.
 Understanding rollback and database errors during deletion was also difficult at first.
 Testing the APIs in Swagger and checking the database helped me understand these concepts better.
+
+
+
+Task 5 - Work Item Status Updates and Employee Summary
+
+Task 5 adds status transition validation and an employee work-summary API to the Employee Management API.
+
+Task 5 - Work Item Status Rules
+A work item can have:
+
+TODO
+IN_PROGRESS
+COMPLETED
+
+Allowed status transitions:
+TODO → IN_PROGRESS
+IN_PROGRESS → COMPLETED
+
+The following rules are handled:
+New work items start with TODO by default.
+Creating a work item with IN_PROGRESS or COMPLETED returns 400.
+Skipped status transitions are not allowed.
+Backward status transitions are not allowed.
+Updating to the current status returns 200 without changing the record.
+Invalid status returns 422.
+Null status returns 422.
+Missing status in PATCH returns 422.
+A non-existing work item returns 404.
+
+
+Task 5 - Update Work Item Status
+
+PATCH /work-items/{work_item_id}/status
+
+Example:
+
+{
+  "status": "IN_PROGRESS"
+}
+
+A successful status update returns:
+
+200 OK
+
+The response contains the updated work item details.
+
+
+
+Task 5 - PUT Work Item Validation
+The existing PUT endpoint applies the same status transition rules.
+
+PUT /work-items/{work_item_id}
+
+The following rules are handled:
+
+Valid status transitions are allowed.
+Disallowed status transitions return 400.
+Omitting status preserves the current status.
+Updating to the current status is allowed.
+A non-existing work item returns 404.
+A rejected status transition does not save any other field changes.
+
+
+Task 5 - Employee Work Summary
+
+GET /employees/{employee_id}/work-summary
+
+This endpoint returns the work item counts for an employee.
+
+Example response:
+
+{
+  "employee_id": 1,
+  "total_work_items": 5,
+  "todo": 2,
+  "in_progress": 2,
+  "completed": 1
+}
+
+The following rules are handled:
+Counts are calculated from the database using SQLAlchemy.
+Only work items currently assigned to the employee are counted.
+The three status counts add up to total_work_items.
+An existing employee with no work items receives zero for all counts.
+A non-existing employee returns 404.
+Deleted work items are not included in the summary.
+Reassigned work items are counted under their current employee.
+
+
+Task 5 Testing
+
+The following cases are tested using Swagger UI:
+
+TODO to IN_PROGRESS
+IN_PROGRESS to COMPLETED
+Skipped status transition
+Backward status transition
+Requesting the current status again
+Invalid status
+Null status
+Missing status
+Creating work items with IN_PROGRESS or COMPLETED
+PUT update without status
+Rejected PUT update without partial changes
+Non-existing work item
+Employee work summary
+Employee with no work items
+Non-existing employee
+Summary after status changes
+Summary after reassignment
+Summary after deletion
+Existing employee and work item APIs
+Database persistence after restarting the application
+
+
+Task 5 screenshots are available in the screenshots folder.
+
+Screenshots:
+
+Successful TODO to IN_PROGRESS transition
+Successful IN_PROGRESS to COMPLETED transition
+Skipped status transition returning 400
+Backward status transition returning 400
+Same status request returning 200
+Invalid status returning 422
+Null status returning 422
+Missing status returning 422
+PUT update without status
+Rejected PUT update verification
+Non-existing work item returning 404
+Employee work summary
+Employee with zero work items
+Non-existing employee returning 404
+Work summary after status change
+Work summary after reassignment
+Work summary after deletion
+Existing API verification
+Database persistence after restarting the application
+
+
+Task 5 - Assumptions
+
+MySQL is running locally.
+Database details are stored in the local .env file.
+Only the specified status transitions are allowed.
+A work summary includes only work items currently assigned to the requested employee.
+
+
+Task 5 - What I Learned
+
+Through Task 5, I learned:
+How to validate work item status transitions.
+How to apply the same status rules to PATCH and PUT.
+How to prevent partial updates when validation fails.
+How to calculate work item counts using SQLAlchemy.
+How to handle employees with no work items.
+How to test API success and error responses using Swagger.
+
+
+Task 5 - Difficulties Faced
+
+Initially, understanding status transition rules and preventing partial updates was challenging.
+Calculating employee work summaries and verifying the counts after status changes, reassignment, and deletion required additional testing.
+Testing the APIs using Swagger helped me understand these scenarios better.

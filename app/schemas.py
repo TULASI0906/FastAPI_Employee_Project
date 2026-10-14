@@ -91,20 +91,35 @@ class WorkItemCreate(BaseModel):
             raise ValueError("Title cannot be blank")
         return value
 
+
+
 class WorkItemUpdate(BaseModel):
-    title: str = Field(min_length=1, max_length=100)
+    title: str | None = Field(default=None, min_length=1, max_length=100)
     description: str | None = None
-    employee_id: int | None = Field(gt=0)
-    status: WorkItemStatus
-    priority: WorkItemPriority 
+    employee_id: int | None = Field(default=None, gt=0)
+    status: WorkItemStatus | None = None
+    priority: WorkItemPriority | None = None
     due_date: date | None = None
 
     @field_validator("title")
     @classmethod
     def validate_title(cls, value):
-        if not value.strip():
+        if value is not None and not value.strip():
             raise ValueError("Title cannot be blank")
         return value
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def reject_null_status(cls, value):
+        if value is None:
+            raise ValueError("Status cannot be null")
+        return value
+
+
+
+class WorkItemStatusUpdate(BaseModel):
+    status: WorkItemStatus
+
 
 class WorkItemResponse(BaseModel):
     id: int
@@ -124,3 +139,11 @@ class WorkItemListResponse(BaseModel):
     limit: int
     offset: int
     items: list[WorkItemResponse]
+
+
+class EmployeeWorkSummaryResponse(BaseModel):
+    employee_id: int
+    total_work_items: int
+    todo: int
+    in_progress: int
+    completed: int

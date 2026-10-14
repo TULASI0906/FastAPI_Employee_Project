@@ -9,10 +9,12 @@ from app.database import Base, engine, get_db
 from app import models
 
 from app.schemas import (
+    EmployeeWorkSummaryResponse,
     EmployeeCreate,
     EmployeeResponse,
     EmployeeUpdate,
     EmployeeListResponse,
+    WorkItemStatusUpdate,
     WorkMode,
     WorkItemCreate,
     WorkItemUpdate,
@@ -32,7 +34,9 @@ from app.services import (
     get_work_items,
     get_work_item,
     update_work_item,
-    delete_work_item
+    update_work_item_status,
+    delete_work_item,
+    get_employee_work_summary
 )
 
 
@@ -111,6 +115,17 @@ def get_employees(
         limit=limit,
         offset=offset
     )
+
+
+@app.get(
+    "/employees/{employee_id}/work-summary",
+    response_model=EmployeeWorkSummaryResponse
+)
+def employee_work_summary_api(
+    employee_id: int = Path(gt=0),
+    db: Session = Depends(get_db)
+):
+    return get_employee_work_summary(db, employee_id)
 
 
 @app.get(
@@ -216,6 +231,22 @@ def update_work_item_api(
         db,
         work_item_id,
         data
+    )
+
+
+@app.patch(
+    "/work-items/{work_item_id}/status",
+    response_model=WorkItemResponse
+)
+def update_work_item_status_api(
+    data: WorkItemStatusUpdate,
+    work_item_id: int = Path(gt=0),
+    db: Session = Depends(get_db)
+):
+    return update_work_item_status(
+        db,
+        work_item_id,
+        data.status
     )
 
 
