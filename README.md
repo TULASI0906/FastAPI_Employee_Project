@@ -544,3 +544,10 @@ Task 5 - Difficulties Faced
 Initially, understanding status transition rules and preventing partial updates was challenging.
 Calculating employee work summaries and verifying the counts after status changes, reassignment, and deletion required additional testing.
 Testing the APIs using Swagger helped me understand these scenarios better.
+
+## Clone and Run Task 5
+
+```bash
+git clone https://github.com/TULASI0906/FastAPI_Employee_Project.git
+cd FastAPI_Employee_Project
+git switch task-5

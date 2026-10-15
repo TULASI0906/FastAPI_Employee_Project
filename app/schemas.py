@@ -93,6 +93,7 @@ class WorkItemCreate(BaseModel):
 
 
 
+
 class WorkItemUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=100)
     description: str | None = None
@@ -101,11 +102,27 @@ class WorkItemUpdate(BaseModel):
     priority: WorkItemPriority | None = None
     due_date: date | None = None
 
-    @field_validator("title")
+    @field_validator("title", mode="before")
     @classmethod
-    def validate_title(cls, value):
-        if value is not None and not value.strip():
+    def reject_null_title(cls, value):
+        if value is None:
+            raise ValueError("Title cannot be null")
+        if isinstance(value, str) and not value.strip():
             raise ValueError("Title cannot be blank")
+        return value
+
+    @field_validator("employee_id", mode="before")
+    @classmethod
+    def reject_null_employee_id(cls, value):
+        if value is None:
+            raise ValueError("Employee ID cannot be null")
+        return value
+
+    @field_validator("priority", mode="before")
+    @classmethod
+    def reject_null_priority(cls, value):
+        if value is None:
+            raise ValueError("Priority cannot be null")
         return value
 
     @field_validator("status", mode="before")
@@ -114,8 +131,6 @@ class WorkItemUpdate(BaseModel):
         if value is None:
             raise ValueError("Status cannot be null")
         return value
-
-
 
 class WorkItemStatusUpdate(BaseModel):
     status: WorkItemStatus
