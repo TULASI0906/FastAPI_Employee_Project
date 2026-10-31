@@ -551,8 +551,7 @@ Testing the APIs using Swagger helped me understand these scenarios better.
 git clone https://github.com/TULASI0906/FastAPI_Employee_Project.git
 cd FastAPI_Employee_Project
 git switch task-5
-
-
+``` 
 ## Task 6 - Introduction to Microservices
 
 Task 6 separates the existing Employee Management API into two independently running microservices.
