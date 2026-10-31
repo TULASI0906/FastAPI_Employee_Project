@@ -551,3 +551,130 @@ Testing the APIs using Swagger helped me understand these scenarios better.
 git clone https://github.com/TULASI0906/FastAPI_Employee_Project.git
 cd FastAPI_Employee_Project
 git switch task-5
+
+
+## Task 6 - Introduction to Microservices
+
+Task 6 separates the existing Employee Management API into two independently running microservices.
+
+### 1. Employee Service
+
+- Runs on port 8001.
+- Uses a separate MySQL database: `employee_service_db`.
+- Manages employee information.
+
+**APIs:**
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/employees` | Create employee |
+| GET | `/employees` | Get all employees |
+| GET | `/employees/{employee_id}` | Get employee by ID |
+| GET | `/health` | Health check |
+
+### 2. Work Item Service
+
+- Runs on port 8002.
+- Uses a separate MySQL database: `work_item_service_db`.
+- Manages work items independently.
+
+**APIs:**
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/work-items` | Create work item |
+| GET | `/work-items` | Get work items |
+| GET | `/work-items/{work_item_id}` | Get work item by ID |
+| GET | `/health` | Health check |
+
+### 3. Service Communication
+
+The Work Item Service communicates with the Employee Service using HTTPX.
+
+Before creating a work item, it checks whether the employee exists by calling:
+
+`GET /employees/{employee_id}`
+
+- If the employee exists, the work item is created.
+- If the employee does not exist, the API returns 404.
+- If the Employee Service is unavailable, the API returns 503.
+
+The Work Item Service stores `employee_id` as an integer. It does not use a foreign key or SQLAlchemy relationship with the Employee Service database.
+
+### 4. Work Item Validation
+
+- New work items must have status `TODO`.
+- Creating with `IN_PROGRESS` or `COMPLETED` returns 400.
+- Invalid status returns 422.
+- Blank title returns 422.
+- Missing work item returns 404.
+- Employee Service unavailability returns 503.
+- Existing work items can still be retrieved when Employee Service is stopped.
+
+### 5. Database Configuration
+
+Two separate databases are used:
+
+- `employee_service_db`
+- `work_item_service_db`
+
+Both services use their own local `.env` files for database configuration.
+
+The actual database passwords are not committed to GitHub. Only `.env.example` files are included.
+
+### 6. Running the Services
+
+Run Employee Service in the first terminal:
+
+```bash
+cd employee_service
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --port 8001
+```
+
+Run Work Item Service in a second terminal:
+
+```bash
+cd work_item_service
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload --port 8002
+```
+
+Swagger documentation:
+
+- Employee Service: http://127.0.0.1:8001/docs
+- Work Item Service: http://127.0.0.1:8002/docs
+
+### 7. Task 6 Testing
+
+The following cases were tested using Swagger UI:
+
+- Employee Service health check
+- Work Item Service health check
+- Employee creation
+- Get all employees
+- Work item creation with 201 Created
+- Get all work items
+- Get work item by ID
+- Non-existing employee returning 404
+- Invalid initial status returning 400
+- Invalid status returning 422
+- Blank title returning 422
+- Missing work item returning 404
+- Employee Service unavailable returning 503
+- Getting existing work items while Employee Service is stopped
+- Database persistence after restarting services
+
+### 8. What I Learned
+
+- How to separate an application into microservices.
+- How to run independent FastAPI applications on different ports.
+- How to configure separate databases for each service.
+- How to communicate between services using HTTPX.
+- How to handle service failures and timeouts.
+- How to test microservice communication using Swagger UI.
+- How to verify database persistence after restarting services.
+
+### 9. Difficulties Faced
+
+Initially, connecting the Work Item Service with the Employee Service was challenging. I also faced issues when the Employee Service was not running. Testing service availability, error responses and database persistence helped me understand microservice communication better.
